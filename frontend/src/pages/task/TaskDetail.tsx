@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState } from "react";
-import { useLocation } from "wouter";
+import { useNavigate, useParams } from "react-router-dom";
 import { 
   useGetTask,
   useUpdateTask,
@@ -38,9 +38,10 @@ import { priorityColors, statusColors, getInitials } from "@/lib/utils";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
-export default function TaskDetail({ params }: { params: { taskId: string } }) {
-  const taskId = parseInt(params.taskId);
-  const [_, setLocation] = useLocation();
+export default function TaskDetail({ params }: { params?: { taskId?: string } }) {
+  const routeParams = useParams<{ taskId: string }>();
+  const taskId = parseInt(params?.taskId ?? routeParams.taskId ?? "0");
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 

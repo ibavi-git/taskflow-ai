@@ -21,8 +21,10 @@
     "baseUrl": ".",
 
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": ["src/*"],
+      "@workspace/api-client-react": ["src/hooks/api-client.ts"]
+    },
+    "types": ["vite/client"]
   },
 
   "include": ["src", "vite.config.ts"]

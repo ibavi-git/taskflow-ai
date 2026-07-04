@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState } from "react";
-import { Link } from "wouter";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { 
   useGetProject,
   useListBoards,
@@ -34,8 +34,9 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 
-export default function ProjectDetail({ params }: { params: { projectId: string } }) {
-  const projectId = parseInt(params.projectId);
+export default function ProjectDetail({ params }: { params?: { projectId?: string } }) {
+  const routeParams = useParams<{ projectId: string }>();
+  const projectId = parseInt(params?.projectId ?? routeParams.projectId ?? "0");
   const queryClient = useQueryClient();
   
   const { data: project, isLoading: projectLoading } = useGetProject(projectId, {
@@ -95,9 +96,9 @@ export default function ProjectDetail({ params }: { params: { projectId: string 
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Breadcrumbs */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-        <Link href="/projects" className="hover:text-foreground transition-colors">Projects</Link>
+        <Link to="/projects" className="hover:text-foreground transition-colors">Projects</Link>
         <ChevronRight className="h-4 w-4" />
-        <Link href={`/workspace/${project.workspaceId}`} className="hover:text-foreground transition-colors">Workspace</Link>
+        <Link to={`/workspace/${project.workspaceId}`} className="hover:text-foreground transition-colors">Workspace</Link>
         <ChevronRight className="h-4 w-4" />
         <span className="text-foreground font-medium">{project.name}</span>
       </div>
@@ -188,7 +189,7 @@ export default function ProjectDetail({ params }: { params: { projectId: string 
               [1, 2].map(i => <Skeleton key={i} className="h-32" />)
             ) : boards && boards.length > 0 ? (
               boards.map(board => (
-                <Link key={board.id} href={`/board/${board.id}`}>
+                <Link key={board.id} to={`/board/${board.id}`}>
                   <Card className="bg-card hover:bg-accent hover-elevate border-border cursor-pointer h-full transition-all group">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-lg group-hover:text-primary transition-colors flex items-center gap-2">

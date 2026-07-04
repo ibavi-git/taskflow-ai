@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { 
   useGetWorkspace, 
   useListProjects,
@@ -40,9 +40,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export default function WorkspaceDetail({ params }: { params: { workspaceId: string } }) {
-  const workspaceId = parseInt(params.workspaceId);
-  const [_, setLocation] = useLocation();
+export default function WorkspaceDetail({ params }: { params?: { workspaceId?: string } }) {
+  const routeParams = useParams<{ workspaceId: string }>();
+  const workspaceId = parseInt(params?.workspaceId ?? routeParams.workspaceId ?? "0");
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   
   const { data: workspace, isLoading: workspaceLoading } = useGetWorkspace(workspaceId, {
@@ -81,7 +82,7 @@ export default function WorkspaceDetail({ params }: { params: { workspaceId: str
           setProjectName("");
           setProjectDesc("");
           queryClient.invalidateQueries({ queryKey: getListProjectsQueryKey(workspaceId) });
-          setLocation(`/project/${proj.id}`);
+          navigate(`/project/${proj.id}`);
         }
       }
     );
@@ -206,7 +207,7 @@ export default function WorkspaceDetail({ params }: { params: { workspaceId: str
               [1, 2, 3].map(i => <Skeleton key={i} className="h-40" />)
             ) : projects && projects.length > 0 ? (
               projects.map(project => (
-                <Link key={project.id} href={`/project/${project.id}`}>
+                <Link key={project.id} to={`/project/${project.id}`}>
                   <Card className="bg-card hover-elevate border-border cursor-pointer h-full transition-all group">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">

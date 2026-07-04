@@ -11,13 +11,17 @@ import Register from "@/pages/auth/Register";
 import ForgotPassword from "@/pages/auth/ForgotPassword";
 import ResetPassword from "@/pages/auth/ResetPassword";
 import Dashboard from "@/pages/dashboard/Dashboard";
-import CalendarPage from "@/pages/calendar/Calendar";
+import Calendar from "@/pages/calendar/Calendar";
 import NotificationsPage from "@/pages/common/Notifications";
 import Projects from "@/pages/workspace/Projects";
 import Reports from "@/pages/dashboard/Reports";
 import Profile from "@/pages/common/Profile";
 import Search from "@/pages/workspace/Search";
 import Settings from "@/pages/common/Settings";
+import WorkspaceDetail from "@/pages/workspace/WorkspaceDetail";
+import ProjectDetail from "@/pages/project/ProjectDetail";
+import BoardDetail from "@/pages/board/BoardDetail";
+import TaskDetail from "@/pages/task/TaskDetail";
 import NotFound from "@/pages/common/not-found";
 
 function App() {
@@ -35,13 +39,17 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<GlobalLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/projects" element={<Projects />} />
-                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/projects" element={<ProjectDetail />} />
+                <Route path="/calendar" element={<Calendar />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/search" element={<Search />} />
+                <Route path="/workspace/:workspaceId" element={<WorkspaceDetail params={{ workspaceId: "" }} />} />
+                <Route path="/project/:projectId" element={<ProjectDetail params={{ projectId: "" }} />} />
+                <Route path="/board/:boardId" element={<BoardDetail params={{ boardId: "" }} />} />
+                <Route path="/task/:taskId" element={<TaskDetail params={{ taskId: "" }} />} />
               </Route>
             </Route>
 

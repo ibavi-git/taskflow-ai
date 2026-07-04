@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { priorityColors, getInitials } from "@/lib/utils";
 import { format, isPast, isToday } from "date-fns";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 
 interface TaskCardProps {
   task: Task;
@@ -49,7 +49,7 @@ export function TaskCard({ task, isOverlay = false }: TaskCardProps) {
         ${isDragging ? 'border-primary' : ''}
       `}
     >
-      <Link href={`/task/${task.id}`} onClick={handleLinkClick}>
+      <Link to={`/task/${task.id}`} onClick={handleLinkClick}>
         <div className="p-3 cursor-grab active:cursor-grabbing block">
           
           {/* Labels */}

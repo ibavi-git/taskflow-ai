@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useParams } from "react-router-dom";
 import { 
   useGetBoard, 
   useListBoardLists,
@@ -36,8 +36,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight, Plus, Settings } from "lucide-react";
 import { Task, TaskListWithTasks } from "@workspace/api-client-react";
 
-export default function BoardDetail({ params }: { params: { boardId: string } }) {
-  const boardId = parseInt(params.boardId);
+export default function BoardDetail({ params }: { params?: { boardId?: string } }) {
+  const routeParams = useParams<{ boardId: string }>();
+  const boardId = parseInt(params?.boardId ?? routeParams.boardId ?? "0");
   const queryClient = useQueryClient();
   
   const { data: board, isLoading: boardLoading } = useGetBoard(boardId, {
@@ -264,9 +265,9 @@ export default function BoardDetail({ params }: { params: { boardId: string } })
       <div className="flex items-center justify-between shrink-0 mb-6">
         <div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-            <Link href="/projects" className="hover:text-foreground transition-colors">Projects</Link>
+            <Link to="/projects" className="hover:text-foreground transition-colors">Projects</Link>
             <ChevronRight className="h-3 w-3" />
-            <Link href={`/project/${board.projectId}`} className="hover:text-foreground transition-colors">Project</Link>
+            <Link to={`/project/${board.projectId}`} className="hover:text-foreground transition-colors">Project</Link>
             <ChevronRight className="h-3 w-3" />
             <span className="text-foreground font-medium">{board.name}</span>
           </div>
