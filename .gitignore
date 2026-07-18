@@ -26,5 +26,5 @@ Thumbs.db
 backend/.env
 !backend/.env.example
 
-attached_assets
+
 .agents
