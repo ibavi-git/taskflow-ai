@@ -1,0 +1,189 @@
+# ============================================
+# TaskFlow AI - Spring Boot Configuration
+# ============================================
+# USING GOOGLE GEMINI API
+# Place this file in: backend/src/main/resources/application.yml
+
+spring:
+  application:
+    name: taskflow-api
+    version: 1.0.0
+  
+  # ============================================
+  # Data Source Configuration
+  # ============================================
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/taskflow_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+  
+  # ============================================
+  # JPA & Hibernate Configuration
+  # ============================================
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        format_sql: ${SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL:true}
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+        order_inserts: true
+        order_updates: true
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
+    open-in-view: false
+  
+  # ============================================
+  # Servlet & Upload Configuration
+  # ============================================
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  
+  # ============================================
+  # Jackson Configuration
+  # ============================================
+  jackson:
+    serialization:
+      indent-output: true
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+    time-zone: UTC
+
+# ============================================
+# Server Configuration
+# ============================================
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+  shutdown: graceful
+  compression:
+    enabled: true
+    min-response-size: 1024
+
+# ============================================
+# Application Configuration
+# ============================================
+app:
+  jwt:
+    secret: ${JWT_SECRET:default-secret-change-in-production}
+    expirationMs: ${JWT_EXPIRATION_MS:86400000}
+  
+  cors:
+    allowedOrigins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+    allowedMethods: GET,POST,PUT,DELETE,OPTIONS
+    allowedHeaders: '*'
+    allowCredentials: true
+    maxAge: 3600
+
+# ============================================
+# External API Configuration
+# ============================================
+
+# Google Gemini API Configuration (PRIMARY)
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:}
+    baseUrl: ${GEMINI_API_BASE_URL:https://generativelanguage.googleapis.com/v1beta/models/}
+    timeout: 30000
+    retries: 3
+    # Model selection
+    modelId: ${GEMINI_API_MODEL_ID:gemini-2.5-flash}  
+    temperature: 0.7
+    maxOutputTokens: 1024
+
+# Alternative: Grok API (if you switch back)
+grok:
+  api:
+    key: ${GROK_API_KEY:}
+    baseUrl: ${GROK_API_BASE_URL:https://api.x.ai/v1}
+    timeout: 30000
+    retries: 3
+
+# Google Calendar Integration
+google:
+  calendar:
+    clientId: ${GOOGLE_CALENDAR_CLIENT_ID:}
+    clientSecret: ${GOOGLE_CALENDAR_CLIENT_SECRET:}
+    redirectUri: ${GOOGLE_CALENDAR_REDIRECT_URI:http://localhost:8080/auth/google/callback}
+
+# ============================================
+# Logging Configuration
+# ============================================
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    com.taskflow: ${LOGGING_LEVEL_COM_TASKFLOW:DEBUG}
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/taskflow-api.log
+    max-size: 10MB
+    max-history: 10
+
+# ============================================
+# Actuator Configuration (Health Checks)
+# ============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+
+# ============================================
+# Environment-Specific Profiles
+# ============================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    show-sql: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  jackson:
+    serialization:
+      indent-output: false
+
+server:
+  compression:
+    enabled: true
+    min-response-size: 1024
+
+logging:
+  level:
+    root: WARN
+    com.taskflow: INFO

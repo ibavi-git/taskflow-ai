@@ -4,48 +4,63 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * CORS Configuration for TaskFlow AI Backend
+ * 
+ * Reads allowed origins from environment variable: CORS_ALLOWED_ORIGINS
+ * Example: "http://localhost:3000,http://localhost:5173,https://taskflow-ai-frontend.onrender.com"
+ */
 @Configuration
 public class CorsConfig {
-
-    /**
-     * Comma-separated list of trusted origins. Override via CORS_ALLOWED_ORIGINS env var.
-     * Defaults cover localhost dev, Replit preview domains, and Replit deployment domains.
-     * Never use wildcard ("*") together with allowCredentials(true) — that violates the CORS spec
-     * and is rejected by browsers.
-     */
-    @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173,http://localhost:21998}")
-    private String allowedOriginsConfig;
-
+    
+    @Value("${cors.allowedOrigins:http://localhost:3000,http://localhost:5173}")
+    private String allowedOrigins;
+    
+    @Value("${cors.allowedMethods:GET,POST,PUT,DELETE,OPTIONS}")
+    private String allowedMethods;
+    
+    @Value("${cors.allowedHeaders:*}")
+    private String allowedHeaders;
+    
+    @Value("${cors.allowCredentials:true}")
+    private boolean allowCredentials;
+    
+    @Value("${cors.maxAge:3600}")
+    private long maxAge;
+    
     @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-
-        // Parse explicit origin list from config; also always permit Replit preview domains
-        List<String> explicitOrigins = Arrays.asList(allowedOriginsConfig.split(","));
-
-        // Pattern-based origins for Replit (*.replit.dev, *.repl.co, *.replit.app)
-        config.setAllowedOriginPatterns(List.of(
-            "https://*.replit.dev",
-            "https://*.repl.co",
-            "https://*.replit.app",
-            "https://*.kirk.replit.dev"
-        ));
-        config.setAllowedOrigins(explicitOrigins);
-
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With"));
-        config.setExposedHeaders(List.of("Authorization"));
-        config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
-
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // Parse comma-separated origins
+        List<String> origins = Arrays.asList(allowedOrigins.split(",\\s*"));
+        configuration.setAllowedOrigins(origins);
+        
+        // Parse comma-separated methods
+        List<String> methods = Arrays.asList(allowedMethods.split(",\\s*"));
+        configuration.setAllowedMethods(methods);
+        
+        // Set allowed headers
+        if ("*".equals(allowedHeaders.trim())) {
+            configuration.setAllowedHeaders(Arrays.asList("*"));
+        } else {
+            List<String> headers = Arrays.asList(allowedHeaders.split(",\\s*"));
+            configuration.setAllowedHeaders(headers);
+        }
+        
+        // Set credentials and max age
+        configuration.setAllowCredentials(allowCredentials);
+        configuration.setMaxAge(maxAge);
+        
+        // Apply to all endpoints
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        source.registerCorsConfiguration("/**", configuration);
+        
+        return source;
     }
 }

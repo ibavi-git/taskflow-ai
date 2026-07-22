@@ -364,7 +364,7 @@ function TaskDialog({ trigger, listId, task, members = [], labels = [], projectI
             <Textarea value={description} onChange={(event) => setDescription(event.target.value)} className="min-h-28" />
             <Button type="button" variant="outline" size="sm" onClick={handleGenerateDescription} disabled={generateDescription.isPending}>
               <Sparkles className="mr-2 h-4 w-4" />
-              {generateDescription.isPending ? "Generating..." : "Generate with Grok"}
+              {generateDescription.isPending ? "Generating..." : "Generate with Gemini"}
             </Button>
           </div>
         </Field>

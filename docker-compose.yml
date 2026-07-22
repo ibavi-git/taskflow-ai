@@ -1,0 +1,95 @@
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: taskflow-postgres
+
+    environment:
+      POSTGRES_DB: taskflow_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2007
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d taskflow_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    restart: unless-stopped
+
+    networks:
+      - taskflow-network
+
+  # ============================================
+  # Spring Boot Backend
+  # ============================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: taskflow-backend
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      GEMINI_API_MODEL_ID: gemini-2.5-flash
+
+    env_file:
+      - ./backend/.env
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - taskflow-network
+
+  # ============================================
+  # React Frontend
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: taskflow-frontend
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      NODE_ENV: production
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
+
+    networks:
+      - taskflow-network
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  taskflow-network:
+    driver: bridge
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres_data:
