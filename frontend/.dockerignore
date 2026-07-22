@@ -3,4 +3,9 @@ dist
 .git
 .vscode
 .env
-npm-debug.log
+.env.*
+*.log
+Dockerfile
+.dockerignore
+package-lock.json
+README.md
