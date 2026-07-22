@@ -18,12 +18,20 @@ RUN mvn clean package -DskipTests
 # Stage 2: Runtime Image
 FROM eclipse-temurin:21-jre-alpine
 
+# Run as non-root user for production security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 WORKDIR /app
 
-COPY --from=builder /app/target/*.jar app.jar
+# Ensure correct permissions on the jar file
+COPY --chown=appuser:appgroup --from=builder /app/target/*.jar app.jar
 
+# Switch to non-root user
+USER appuser
+
+# Health check (matches endpoint in HealthController.java)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/healthz || exit 1
 
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
 

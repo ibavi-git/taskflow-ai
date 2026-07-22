@@ -453,52 +453,56 @@ Spring Boot will auto-create all tables on first run via JPA.
 
 ### 3. Configure the backend
 
-Create `backend/src/main/resources/application.properties`:
+Copy the environment template in the backend directory:
+```bash
+cp backend/.env.example backend/.env
+```
+Open `backend/.env` and configure your credentials:
+```env
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/taskflow_db
+SPRING_DATASOURCE_USERNAME=your_db_username
+SPRING_DATASOURCE_PASSWORD=your_db_password
 
-```properties
-# Database
-spring.datasource.url=jdbc:postgresql://localhost:5432/taskflow_db
-spring.datasource.username=YOUR_DB_USERNAME
-spring.datasource.password=YOUR_DB_PASSWORD
-spring.jpa.hibernate.ddl-auto=update
-
-# JWT
-jwt.secret=YOUR_JWT_SECRET_KEY
-jwt.expiration=86400000
-
-# Gemini AI
-gemini.api.key=YOUR_GEMINI_API_KEY
-
-# Google Calendar
-google.calendar.client-id=YOUR_GOOGLE_CLIENT_ID
-google.calendar.client-secret=YOUR_GOOGLE_CLIENT_SECRET
+JWT_SECRET=your_secure_jwt_secret_key_at_least_32_characters
+GEMINI_API_KEY=your_google_gemini_api_key
 ```
 
-> ⚠️ Never commit your API keys. Ensure `application.properties` is listed in `.gitignore`.
+> ⚠️ **IMPORTANT:** Never commit your `.env` files. They are automatically ignored by `.gitignore`.
 
 ---
 
-### 4. Run the backend
+### 4. Configure the frontend
+
+Copy the environment template in the frontend directory:
+```bash
+cp frontend/.env.example frontend/.env
+```
+Configure backend url (or keep default local):
+```env
+VITE_API_BASE_URL=http://localhost:8080/api
+```
+
+---
+
+### 5. Run the backend
 
 ```bash
 cd backend
 mvn clean install
 mvn spring-boot:run
 ```
-
-Backend runs at `http://localhost:8080`
+Backend API will start running at `http://localhost:8080/api`
 
 ---
 
-### 5. Run the frontend
+### 6. Run the frontend
 
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-
-Frontend runs at `http://localhost:5173`
+Frontend development server will run at `http://localhost:5173`
 
 ---
 
@@ -506,9 +510,54 @@ Frontend runs at `http://localhost:5173`
 
 | Service | Port | URL |
 |---|---|---|
-| Spring Boot API | 8080 | http://localhost:8080 |
+| Spring Boot API | 8080 | http://localhost:8080/api |
 | React Frontend | 5173 | http://localhost:5173 |
 | PostgreSQL | 5432 | localhost:5432 |
+
+---
+
+## 🐳 Docker & Containerization
+
+### Running Locally with Docker Compose
+
+Build and run all services (PostgreSQL, Spring Boot Backend, and Nginx Frontend) with a single command:
+
+```bash
+# Create a root-level .env if you wish to override parameters
+docker compose up --build
+```
+
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8080/api
+- **Postgres Database:** localhost:5432 (mapped to persistent volume `postgres_data`)
+
+---
+
+## 🚀 Production Deployment
+
+### 1. Backend Deployment (Spring Boot)
+- **Engine:** Docker multi-stage build.
+- **Port:** Configurable via `PORT` or `SERVER_PORT` environment variables (defaults to 8080).
+- **Required Env Vars:**
+  - `SPRING_DATASOURCE_URL`: PostgreSQL JDBC url (`jdbc:postgresql://<host>:<port>/<db>`)
+  - `SPRING_DATASOURCE_USERNAME`: database username
+  - `SPRING_DATASOURCE_PASSWORD`: database password
+  - `JWT_SECRET`: strong cryptographically random key (min. 32 characters)
+  - `GEMINI_API_KEY`: Google Gemini api key
+  - `CORS_ALLOWED_ORIGINS`: comma-separated allowed origins (no spaces, e.g. `https://your-frontend.com`)
+  - `SPRING_PROFILES_ACTIVE`: `prod`
+
+### 2. Frontend Deployment (React + Vite)
+- **Engine:** Docker multi-stage Nginx-alpine image.
+- **Port:** 3000 (standardized).
+- **Required Env Vars (Build-Time):**
+  - `VITE_API_BASE_URL`: Fully qualified production domain endpoint (e.g. `https://api.yourdomain.com/api`)
+
+### Supported Cloud Platforms
+- **Render:** Set root directories to `backend` and `frontend`, use Docker runtime.
+- **Railway:** Connect repo, setup Postgres service, map variables.
+- **DigitalOcean / AWS / GCP:** Deploy standard containers via Docker Compose or Kubernetes manifests.
+
 
 ---
 

@@ -1,7 +1,18 @@
 # ============================================
-# Backend (Spring Boot / Maven)
+# TaskFlow AI - Production .gitignore
 # ============================================
 
+# Root & Build Logs
+/build.log
+*.log
+*.err
+*.out
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Backend (Spring Boot / Maven)
 backend/target/
 backend/.mvn/wrapper/maven-wrapper.jar
 backend/.idea/
@@ -9,78 +20,61 @@ backend/*.iml
 backend/.classpath
 backend/.project
 backend/.settings/
-
-# Logs
 backend/logs/
 backend/*.log
 backend/*.out
+backend/application-local.yml
+backend/application-local.properties
 
-# Environment
+# Backend Local Environments
 backend/.env
 backend/.env.*
 !backend/.env.example
 
-# Secrets
-backend/application-local.yml
-backend/application-local.properties
-
-# ============================================
-# Frontend (React / Vite)
-# ============================================
-
+# Frontend (React / Vite / Node)
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 frontend/.cache/
-
-# Logs
 frontend/*.log
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/pnpm-debug.log*
 
-# Environment
+# Frontend Local Environments
 frontend/.env
 frontend/.env.*
 !frontend/.env.example
 
-# ============================================
-# Docker
-# ============================================
-
+# Docker & Databases
 docker-data/
 postgres_data/
+/postgres_data/
 *.pid
-
-# Docker override files
 docker-compose.override.yml
 
-# ============================================
-# IDE
-# ============================================
-
+# IDE & Code Editors
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-
 .idea/
 *.iml
+*.sublime-project
+*.sublime-workspace
 
-# ============================================
-# Operating System
-# ============================================
-
+# Operating System Junk
 .DS_Store
 Thumbs.db
 desktop.ini
+$RECYCLE.BIN/
+ehthumbs.db
+Icon?
+ehthumbs_vista.db
 
-# ============================================
-# Java
-# ============================================
-
+# Java & Compilation
 *.class
 *.jar
 *.war
@@ -88,82 +82,43 @@ desktop.ini
 hs_err_pid*
 replay_pid*
 
-# ============================================
-# Maven
-# ============================================
-
+# Maven specific
 .mvn/timing.properties
 
-# ============================================
-# Node
-# ============================================
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# ============================================
-# Build Files
-# ============================================
-
+# Build & Test outputs
 build/
 out/
 coverage/
-
-# ============================================
-# Testing
-# ============================================
-
 test-results/
 playwright-report/
-coverage/
 *.lcov
 
-# ============================================
-# Temporary Files
-# ============================================
-
+# Temporary / Cache files
 *.tmp
 *.temp
 *.swp
 *.swo
 *~
+.sass-cache/
 
-# ============================================
 # Archives
-# ============================================
-
 *.zip
 *.tar
 *.tar.gz
 *.rar
 *.7z
 
-# ============================================
-# Generated Images / Reports
-# ============================================
-
+# Generated Reports & Media
 reports/
 screenshots/
+/reports/
+/screenshots/
 
-# ============================================
-# AI / Agents
-# ============================================
-
+# AI / Agents Config
 .agents/
 attached_assets/
 
-# ============================================
-# Local Development
-# ============================================
-
+# Root Environment files
 .env
 .env.*
 !.env.example
-
-# ============================================
-# Miscellaneous
-# ============================================
-
-HELP.md

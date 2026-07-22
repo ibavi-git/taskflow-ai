@@ -77,7 +77,8 @@ server:
 # ============================================
 app:
   jwt:
-    secret: ${JWT_SECRET:default-secret-change-in-production}
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION_MS:86400000}
     expirationMs: ${JWT_EXPIRATION_MS:86400000}
   
   cors:
@@ -86,6 +87,13 @@ app:
     allowedHeaders: '*'
     allowCredentials: true
     maxAge: 3600
+
+cors:
+  allowedOrigins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+  allowedMethods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
+  allowedHeaders: ${CORS_ALLOWED_HEADERS:*}
+  allowCredentials: ${CORS_ALLOW_CREDENTIALS:true}
+  maxAge: ${CORS_MAX_AGE:3600}
 
 # ============================================
 # External API Configuration
