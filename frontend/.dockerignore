@@ -7,5 +7,4 @@ dist
 *.log
 Dockerfile
 .dockerignore
-package-lock.json
 README.md
